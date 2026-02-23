@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lynetteycy.ClinicPhotoAI",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,14 +25,17 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.lynetteycy.ClinicPhotoAI"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "react-native-vision-camera",
-      "@stripe/stripe-react-native"
-    ]
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "c8d4eb03-713f-4f3d-8977-b89474ccd13a"
+      }
+    }
   }
 }
