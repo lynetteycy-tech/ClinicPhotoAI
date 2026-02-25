@@ -6,6 +6,7 @@ import { Camera, useCameraDevices, useCameraPermission } from 'react-native-visi
 import { launchImageLibrary } from 'react-native-image-picker';
 import { RootStackParamList } from '../types';
 import { PhotoStorage } from '../utils/PhotoStorage';
+import CameraOverlay from '../components/CameraOverlay';
 
 type CameraScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Camera'>;
 
@@ -70,17 +71,39 @@ const CameraScreen = () => {
       });
 
       if (photo) {
-        // Save photo to global storage
-        PhotoStorage.setPhoto(currentAngleIndex, photo.path);
-        console.log(`Photo saved at index ${currentAngleIndex}:`, photo.path);
-        console.log('All photos after save:', PhotoStorage.getPhotos());
-        
-        // Navigate to photo review with current angle and real photo
-        navigation.navigate('PhotoReview' as any, { 
-          angle: currentAngle, 
-          photoUri: photo.path,
-          currentAngleIndex: currentAngleIndex
-        });
+        try {
+          // Generate proper filename
+          const filename = PhotoStorage.generateFilename(currentAngle);
+          console.log(`Generated filename: ${filename}`);
+          console.log(`Original photo path: ${photo.path}`);
+          
+          // For now, use original path but log the intended filename
+          // TODO: Implement proper file renaming in Phase 3 with better file system API
+          console.log(`Note: Photo saved with original name. Intended name: ${filename}`);
+          
+          // Save photo to global storage (using original path for now)
+          PhotoStorage.setPhoto(currentAngleIndex, photo.path);
+          console.log(`Photo saved at index ${currentAngleIndex}:`, photo.path);
+          console.log('All photos after save:', PhotoStorage.getPhotos());
+          
+          // Navigate to photo review with current angle and photo
+          navigation.navigate('PhotoReview' as any, { 
+            angle: currentAngle, 
+            photoUri: photo.path,
+            currentAngleIndex: currentAngleIndex
+          });
+        } catch (error) {
+          console.error('Error saving photo:', error);
+          Alert.alert('Error', 'Failed to save photo');
+          
+          // Fallback: use original photo
+          PhotoStorage.setPhoto(currentAngleIndex, photo.path);
+          navigation.navigate('PhotoReview' as any, { 
+            angle: currentAngle, 
+            photoUri: photo.path,
+            currentAngleIndex: currentAngleIndex
+          });
+        }
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to capture photo');
@@ -141,6 +164,12 @@ const CameraScreen = () => {
           device={device}
           isActive={isCameraActive}
           photo={true}
+        />
+        
+        <CameraOverlay
+          currentAngle={currentAngle}
+          currentAngleIndex={currentAngleIndex}
+          totalAngles={angles.length}
         />
         
         <View style={styles.buttonContainer}>
