@@ -5,9 +5,17 @@ export type RootStackParamList = {
   AddPatient: undefined;
   Consent: undefined;
   CaptureInstructions: undefined;
-  Camera: { angle?: string; photoUri?: string; photoAccepted?: boolean; currentAngleIndex?: number };
+  Camera: { 
+    angle?: string; 
+    photoUri?: string; 
+    photoAccepted?: boolean; 
+    currentAngleIndex?: number;
+    retakeAngle?: string;
+    retakeIndex?: number;
+    capturedPhotos?: string[];
+  };
   PhotoReview: { angle: string; photoUri: string; currentAngleIndex: number };
   AngleReview: { angle: string; photoUri: string };
-  GridReview: undefined;
+  GridReview: { capturedPhotos?: string[] };
   PatientGallery: { patientId: string };
 };

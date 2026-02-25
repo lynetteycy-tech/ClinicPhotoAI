@@ -1,22 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Modal, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
+import { PhotoStorage } from '../utils/PhotoStorage';
 
 type GridReviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GridReview'>;
 
 const GridReviewScreen = () => {
   const navigation = useNavigation<GridReviewScreenNavigationProp>();
+  const route = useRoute<any>();
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Test PhotoStorage import and functionality
+  useEffect(() => {
+    console.log('GridReview mounted - Testing PhotoStorage import...');
+    console.log('PhotoStorage module:', PhotoStorage);
+    console.log('PhotoStorage.getPhotos method:', typeof PhotoStorage.getPhotos);
+    const testPhotos = PhotoStorage.getPhotos();
+    console.log('PhotoStorage.getPhotos() result:', testPhotos);
+  }, []);
+
+  // Use real photos from PhotoStorage directly (bypass navigation params)
+  const capturedPhotos = PhotoStorage.getPhotos();
+  console.log('GridReview reading directly from PhotoStorage:', capturedPhotos);
+  
+  // Use real photos if available, otherwise placeholders
   const photos = [
-    { id: 1, angle: 'Front', uri: 'https://via.placeholder.com/300x400' },
-    { id: 2, angle: 'Left 45°', uri: 'https://via.placeholder.com/300x400' },
-    { id: 3, angle: 'Left 90°', uri: 'https://via.placeholder.com/300x400' },
-    { id: 4, angle: 'Right 45°', uri: 'https://via.placeholder.com/300x400' },
-    { id: 5, angle: 'Right 90°', uri: 'https://via.placeholder.com/300x400' },
+    { id: 1, angle: 'Front', uri: capturedPhotos[0] || 'https://via.placeholder.com/300x400' },
+    { id: 2, angle: 'Left 45°', uri: capturedPhotos[1] || 'https://via.placeholder.com/300x400' },
+    { id: 3, angle: 'Left 90°', uri: capturedPhotos[2] || 'https://via.placeholder.com/300x400' },
+    { id: 4, angle: 'Right 45°', uri: capturedPhotos[3] || 'https://via.placeholder.com/300x400' },
+    { id: 5, angle: 'Right 90°', uri: capturedPhotos[4] || 'https://via.placeholder.com/300x400' },
   ];
 
   const handlePhotoPress = (index: number) => {
@@ -24,11 +40,11 @@ const GridReviewScreen = () => {
     setModalVisible(true);
   };
 
-  const handleRetake = (angle: string) => {
+  const handleRetake = (angle: string, index: number) => {
     Alert.alert('Retake Photo', `Retake ${angle} photo?`, [
       {
         text: 'Yes',
-        onPress: () => navigation.navigate('Camera'),
+        onPress: () => navigation.navigate('Camera', { retakeAngle: angle, retakeIndex: index }),
       },
       {
         text: 'Cancel',
@@ -50,23 +66,23 @@ const GridReviewScreen = () => {
     Alert.alert('Select Angle to Retake', 'Choose which angle to retake:', [
       {
         text: 'Front',
-        onPress: () => handleRetake('Front'),
+        onPress: () => handleRetake('Front', 0),
       },
       {
         text: 'Left 45°',
-        onPress: () => handleRetake('Left 45°'),
+        onPress: () => handleRetake('Left 45°', 1),
       },
       {
         text: 'Left 90°',
-        onPress: () => handleRetake('Left 90°'),
+        onPress: () => handleRetake('Left 90°', 2),
       },
       {
         text: 'Right 45°',
-        onPress: () => handleRetake('Right 45°'),
+        onPress: () => handleRetake('Right 45°', 3),
       },
       {
         text: 'Right 90°',
-        onPress: () => handleRetake('Right 90°'),
+        onPress: () => handleRetake('Right 90°', 4),
       },
       {
         text: 'Cancel',

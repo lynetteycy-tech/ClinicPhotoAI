@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, PermissionsAndroid, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Camera, useCameraDevices, useCameraPermission } from 'react-native-vision-camera';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { RootStackParamList } from '../types';
+import { PhotoStorage } from '../utils/PhotoStorage';
 
 type CameraScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Camera'>;
 
@@ -21,6 +22,7 @@ const CameraScreen = () => {
   const initialAngleIndex = route.params?.currentAngleIndex || 0;
   const [currentAngleIndex, setCurrentAngleIndex] = useState(initialAngleIndex);
   const [isCameraActive, setIsCameraActive] = useState(true);
+  const camera = useRef<Camera>(null);
   
   const angles = ['Front', 'Left 45°', 'Left 90°', 'Right 45°', 'Right 90°'];
   const currentAngle = angles[currentAngleIndex];
@@ -32,6 +34,11 @@ const CameraScreen = () => {
     }
   }, [hasPermission, requestPermission]);
 
+  // Initialize photo storage on mount
+  useEffect(() => {
+    console.log('CameraScreen mounted. Current photos:', PhotoStorage.getPhotos());
+  }, []);
+
   // Check if we're coming back from photo review (accepted photo)
   useEffect(() => {
     if (route.params?.photoAccepted) {
@@ -41,7 +48,9 @@ const CameraScreen = () => {
           setCurrentAngleIndex(currentAngleIndex + 1);
         } else {
           // All angles done, go to grid review
-          navigation.navigate('GridReview');
+          const photos = PhotoStorage.getPhotos();
+          console.log('Navigating to GridReview with photos:', photos);
+          navigation.navigate('GridReview' as any, { capturedPhotos: photos });
         }
       }, 100);
     }
@@ -54,16 +63,25 @@ const CameraScreen = () => {
     }
 
     try {
-      // For now, simulate photo capture with test data
-      // TODO: Implement actual photo capture with react-native-vision-camera
-      const photoUri = 'https://via.placeholder.com/300x400';
-      
-      // Navigate to photo review with current angle and photo
-      navigation.navigate('PhotoReview', { 
-        angle: currentAngle, 
-        photoUri: photoUri,
-        currentAngleIndex: currentAngleIndex
+      // Take photo with react-native-vision-camera
+      const photo = await camera.current?.takePhoto({
+        flash: 'off',
+        enableShutterSound: true,
       });
+
+      if (photo) {
+        // Save photo to global storage
+        PhotoStorage.setPhoto(currentAngleIndex, photo.path);
+        console.log(`Photo saved at index ${currentAngleIndex}:`, photo.path);
+        console.log('All photos after save:', PhotoStorage.getPhotos());
+        
+        // Navigate to photo review with current angle and real photo
+        navigation.navigate('PhotoReview' as any, { 
+          angle: currentAngle, 
+          photoUri: photo.path,
+          currentAngleIndex: currentAngleIndex
+        });
+      }
     } catch (error) {
       Alert.alert('Error', 'Failed to capture photo');
       console.error('Photo capture error:', error);
@@ -75,7 +93,8 @@ const CameraScreen = () => {
       setCurrentAngleIndex(currentAngleIndex + 1);
     } else {
       // All angles done, go to grid review
-      navigation.navigate('GridReview');
+      const photos = PhotoStorage.getPhotos();
+      navigation.navigate('GridReview' as any, { capturedPhotos: photos });
     }
   };
 
@@ -117,17 +136,12 @@ const CameraScreen = () => {
       
       <View style={styles.content}>
         <Camera
+          ref={camera}
           style={styles.camera}
           device={device}
           isActive={isCameraActive}
           photo={true}
         />
-        
-        <View style={styles.overlay}>
-          <View style={styles.angleIndicator}>
-            <Text style={styles.angleText}>{currentAngle}</Text>
-          </View>
-        </View>
         
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
