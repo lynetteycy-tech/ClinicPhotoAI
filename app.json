@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lynetteycy.ClinicPhotoAI",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "This app uses the camera to take patient photos for medical documentation."
       }
     },
     "android": {
@@ -26,12 +27,17 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.lynetteycy.ClinicPhotoAI"
+      "package": "com.lynetteycy.ClinicPhotoAI",
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      "react-native-vision-camera"
+    ],
     "extra": {
       "eas": {
         "projectId": "c8d4eb03-713f-4f3d-8977-b89474ccd13a"

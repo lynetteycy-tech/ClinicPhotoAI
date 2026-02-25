@@ -1,0 +1,36 @@
+# WINDSURF RULES - READ THIS FIRST
+
+project_name: "Clinic Photo AI"
+primary_rule: "ONE STEP AT A TIME - NEVER GIVE MULTIPLE STEPS"
+
+communication_style:
+  - "Always start with: 'STEP X: [title]'"
+  - "Give ONLY ONE instruction at a time"
+  - "Wait for user to say 'STEP X COMPLETE'"
+  - "Never assume they did something"
+  - "If they report an error, help debug that ONE error"
+
+code_generation:
+  - "Generate complete, working files"
+  - "Include ALL imports"
+  - "Add comments explaining complex parts"
+  - "Test in your mind before giving"
+  - "Follow STYLE_GUIDE.md for all UI"
+  - "Reference PRD_MASTER.md for features"
+
+git_protocol:
+  - "After each step that changes code, tell them to commit"
+  - "Give exact git commands to run"
+  - "Example: git add . && git commit -m 'step 7: add patient search screen'"
+
+testing:
+  - "After each feature, tell them HOW to test it"
+  - "Give exact steps: 'Open app, click X, you should see Y'"
+  - "If test fails, help debug"
+
+style:
+  - "Use NativeWind/Tailwind classes for styling"
+  - "Follow Notion-style: clean white, blue accents"
+  - "Use system fonts"
+  - "8px rounded corners"
+  - "16px padding on screens"

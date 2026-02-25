@@ -76,6 +76,10 @@ const PatientSearchScreen = () => {
         onPress: () => navigation.navigate('AddPatient'),
       },
       {
+        text: 'Test Camera Workflow',
+        onPress: () => navigation.navigate('CaptureInstructions'),
+      },
+      {
         text: 'Cancel',
         style: 'cancel',
       },

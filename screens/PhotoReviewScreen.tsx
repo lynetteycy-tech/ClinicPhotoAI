@@ -9,7 +9,7 @@ type PhotoReviewScreenNavigationProp = StackNavigationProp<RootStackParamList, '
 const PhotoReviewScreen = () => {
   const navigation = useNavigation<PhotoReviewScreenNavigationProp>();
   const route = useRoute<any>();
-  const { angle, photoUri } = route.params;
+  const { angle, photoUri, currentAngleIndex } = route.params;
 
   const handleReject = () => {
     // Go back to camera to retake
@@ -17,8 +17,15 @@ const PhotoReviewScreen = () => {
   };
 
   const handleAccept = () => {
-    // Navigate to next angle or grid review
-    navigation.navigate('GridReview');
+    // Check if this is the last angle
+    if (angle === 'Right 90°') {
+      // Last angle, go to grid review
+      navigation.navigate('GridReview');
+    } else {
+      // Not last angle, go back to camera with next angle index
+      const nextAngleIndex = currentAngleIndex + 1;
+      navigation.navigate('Camera', { currentAngleIndex: nextAngleIndex });
+    }
   };
 
   return (

@@ -1,13 +1,33 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 const AnalysisScreen = () => {
   return (
-    <View className="flex-1 bg-white justify-center items-center">
-      <Text className="text-xl text-gray-800">Analysis Screen</Text>
-      <Text className="text-sm text-gray-600 mt-2">AI analysis results coming soon</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Analysis Screen</Text>
+      <Text style={styles.subtitle}>AI analysis results coming soon</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    color: '#1f2937',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+});
 
 export default AnalysisScreen;
